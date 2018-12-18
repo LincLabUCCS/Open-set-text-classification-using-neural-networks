@@ -27,55 +27,17 @@ def inp_data(a, b):
 
 openset_test = True
 
-#dataset = "amazon"
+
 dataset ="20ng"
-
-
 folder_name = "1544055461"
 trained_classes = ['comp.windows.x', 'misc.forsale', 'talk.politics.guns', 'sci.electronics', 'rec.autos']
-
-
-#folder_name = "1541029985"
-#trained_classes = ['Tent', 'Toys', 'Video Games', 'Vitamin Supplement', 'Wall Clock', 'Watch', 'Webcam']
-
-
-
-#folder_name = "1540527051"
-#trained_classes = ['Webcam',  'Subwoofer', 'Table Chair','Musical Instruments', 'Network Adapter','Kindle','Clothing']
+#dataset = "amazon"
 #folder_name = "1540581200"
 #trained_classes = ['Shoes', 'Battery', 'Pillow', 'Graphics Card','Rice Cooker']
 
 
-
-#folder_name ="1540235911"
-#trained_classes = ['Amplifier', 'Rice Cooker', 'Battery', 'Beauty', 'Cable']
-
-
-
-
-#folder_name = "1539923460"
-#trained_classes = ['Vitamin Supplement', 'Rice Cooker', 'Pet Supplies', 'Mouse', 'Graphics Card']
-#trained_classes = ['Watch', 'Graphics Card', 'Shoes','Automotive', 'Luggage']
-
-
-#dataset = "20ng"
-#folder_name ="1539374120"
-#folder_name = "1539376652"
-#folder_name = "1538623592"
-#folder_name = "1539051540"
-#folder_name = "1538961826"
-#trained_classes = ['comp.graphics', 'alt.atheism', 'comp.sys.mac.hardware', 'misc.forsale', 'rec.autos']
-#trained_classes = ['rec.sport.baseball', 'sci.crypt', 'comp.sys.ibm.pc.hardware', 'sci.med', 'talk.politics.guns' ]
-#trained_classes =['comp.graphics', 'rec.sport.baseball']
-#trained_classes=['comp.os.ms-windows.misc','sci.space','rec.motorcycles','soc.religion.christian', 'rec.sport.hockey']
-#trained_classes = ['rec.motorcycles',  'sci.electronics','comp.windows.x','talk.religion.misc','rec.sport.baseball']
-#trained_classes = ['comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt',
-# 'sci.electronics', 'sci.med', 'sci.space', 'soc.religion.christian', 'talk.politics.guns','alt.atheism']
-
 dirs = generate_folders(folder_name)
-untrained_class_size = 15
-#untrained_class_size = 3
-
+untrained_class_size = 5 #trained on 5 classes and testing on 10 classes where 5 classes are unseen
 
 
 if dataset == "amazon":
@@ -85,19 +47,12 @@ elif dataset == "20ng":
 elif dataset == "reuters":
     all_classes = ['acq', 'crude', 'earn', 'grain', 'interest', 'money-fx', 'ship', 'trade']
 else:
-    print( "Invalid dataset!")
-# untrained_classes = ['Clothing', 'Lamp', 'Toys']
-untrained_classes = random.sample(list(set(all_classes) - set(trained_classes)), untrained_class_size)
-#untrained_classes = ['talk.politics.guns', 'sci.med', 'sci.space', 'talk.politics.mideast','soc.religion.christian']
-#untrained_classes = ['talk.religion.misc','sci.electronics','sci.crypt','talk.politics.guns','sci.space', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware','comp.windows.x','rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey', 'talk.politics.mideast','sci.med', 'talk.politics.misc', 'soc.religion.christian']
+    print("Invalid dataset!")
 
-#untrained_classes = ['talk.religion.misc','sci.electronics']
+untrained_classes = random.sample(list(set(all_classes) - set(trained_classes)), untrained_class_size)
 testing_classes = trained_classes + untrained_classes
 print("Testing classes", testing_classes)
-
 print("length of testing classes" ,len(testing_classes))
-
-
 
 if openset_test == True:
     if dataset == "amazon":
@@ -116,25 +71,13 @@ else:
         pass
         # code this
 
-#print("x_net type, y_net type, labels type", type(x_net), type(y_net), type(labels))
-#print(len(x_net))
-#print(x_net[1])
-#print(y_net.shape)
-#print(y_net)
-#print(len(labels))
-#print(labels[1])
-#exit() 
-
 path = "./runs/"+folder_name+"/vocab"
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(path)
 x_test = np.array(list(vocab_processor.transform(x_net)))
 print("After transformation")
 print(x_test.shape)
 print(x_test)
-
 print( "Done.")
-#exit()
-
 
 gpu_frac = 0.2
 
@@ -177,14 +120,12 @@ with graph.as_default():
                 all_probabilities = probabilities
 print( "Done.")
 
-# create a list with trained classes and u for unknown classes, y_net = [1 0 0 ...5 5 4] is modified to y_act = [1 0 0 ...u u u] as only 2 classes are trained and 5, 4 are unknown. 
+# create a list with trained classes and u for unknown classes, y_net = [1 2 0 ...5 8 7] is modified to y_act = [1 2 0 ...5 u u] as only 5 classes are trained and 8, 7 are unknown. 
 # We put a high value 120 for 'u' else leave y_act as it is. so y_act = [ 1 0 0 ....120 120 120]
 y_act = mark_unknowns(y_net, trained_classes);y_act = [120 if x=='u' else x for x in y_act];
 print(y_act[:20])
 
-
-#we need to create a function for Local Outlier Factor for novelty dtection by setting novelty to true.
-#new addition of code starts here
+#Local Outlier Factor for novelty dtection by setting novelty to true.
 print("\n Local outlier Factor")
 from sklearn.neighbors import LocalOutlierFactor
 all_unnormalized_scores1 = []
@@ -225,7 +166,7 @@ print("predict_scores", final_predict_scores[:20])
 
 
 lof_pred = []
-for i, value in enumerate(final_predict_scores):
+for i, value in enumerate(final_predict_scores):           #visit again to put another loop instead of hard coding
 	if final_predict_scores[i][0] == -1 and final_predict_scores[i][1] == -1 and final_predict_scores[i][2] == -1 and final_predict_scores[i][3] == -1 and final_predict_scores[i][4] == -1: 
 		lof_pred.append(120)
 	elif final_predict_scores[i][0] == 1:
@@ -240,13 +181,9 @@ for i, value in enumerate(final_predict_scores):
                 lof_pred.append(4)
         
 print("length of lof_pred", len(lof_pred))
-
 print(lof_pred[:20])
 
-
-#exit()
-
-# OLD
+# Isolation Forest Algorithm 
 print("\n Isolation forest")
 all_unnormalized_scores = []
 
@@ -274,24 +211,9 @@ for av in all_av:
         un_nm_scores.append(clf.decision_function(av.reshape(1,-1))[0])
 	
     all_unnormalized_scores.append(un_nm_scores)
-    
-
-#display list, first get length of list
-#print(len(all_unnormalized_scores))
-#print(all_unnormalized_scores[:10])
 
 #add thresholds
 all_unnormalized_scores.append(thresholds.values())
-#print(len(all_unnormalized_scores))
-#print(all_unnormalized_scores[-10:])
-
-#print("all_unnormalized with thresholds", all_unnormalized_scores)
-#print ("Done")
-
-#exit()
-
-
-
 from sklearn.preprocessing import minmax_scale
 f = minmax_scale(np.array(all_unnormalized_scores))
 scores = f[:-1]
@@ -315,52 +237,50 @@ print(len(loop_pred))
 
 print(loop_pred[:20])
 
-#exit()       
-# kNN averaged
+      
+# kNN averaged tried adding additional outlier detectors but did not perform well
 # EUCOS
-metric_type = "eucos"
-normalized = False
-threshold = 0.4
+# metric_type = "eucos"
+# normalized = False
+# threshold = 0.4
 
-eucos_pred = []
-max_csps = []
-max_osps = []
-os_probs = []
-weibull_models = {}
-trained_class_avs = {}
-closest_avs = {}
-tempvar = len(y_net)
-print (tempvar)
-for tc in trained_classes:
-    weibull_models[tc] = libmr.load_from_binary(pickle.load(open("./data/avs/avs_"+folder_name+"/k_dist_wb_models/"+tc+".npy", "rb")))
-    trained_class_avs[tc] = np.load("./data/avs/avs_"+folder_name+"/"+tc+".npy")
-    closest_avs[tc] = np.load("./data/avs/avs_"+folder_name+"/k_closest/"+tc+".npy")
-print ("Done loading Weibull models.")
-sri = 0
-for av in tqdm(all_av):
-#     if sri > 15:break;
-    d = {}
-    p = {}
-    for tc in trained_classes:
-        k_dist_temp = []
-        for e in closest_avs[tc]:
-            cov_inp = trained_class_avs[tc]
-            temp_dist = distance_metric(av, e, metric_type, cov_inp, normalized=normalized)
-            k_dist_temp.append(temp_dist)
-        d[tc] = np.mean(k_dist_temp)
-        p[tc] = 1-weibull_models[tc].w_score_vector(np.array([d[tc]], dtype="double"))
-    final_p = {} 
-    for i, v in enumerate(p.values()):
-        if v[0] > threshold:
-            final_p[i] = v[0]
-    if len(final_p) == 0:
-        eucos_pred.append(120)
-    else:
-        eucos_pred.append(int(max(final_p, key=final_p.get)))
-    sri+=1
-print ("Done.")
-
-
+# eucos_pred = []
+# max_csps = []
+# max_osps = []
+# os_probs = []
+# weibull_models = {}
+# trained_class_avs = {}
+# closest_avs = {}
+# tempvar = len(y_net)
+# print (tempvar)
+# for tc in trained_classes:
+#     weibull_models[tc] = libmr.load_from_binary(pickle.load(open("./data/avs/avs_"+folder_name+"/k_dist_wb_models/"+tc+".npy", "rb")))
+#     trained_class_avs[tc] = np.load("./data/avs/avs_"+folder_name+"/"+tc+".npy")
+#     closest_avs[tc] = np.load("./data/avs/avs_"+folder_name+"/k_closest/"+tc+".npy")
+# print ("Done loading Weibull models.")
+# sri = 0
+# for av in tqdm(all_av):
+# #     if sri > 15:break;
+#     d = {}
+#     p = {}
+#     for tc in trained_classes:
+#         k_dist_temp = []
+#         for e in closest_avs[tc]:
+#             cov_inp = trained_class_avs[tc]
+#             temp_dist = distance_metric(av, e, metric_type, cov_inp, normalized=normalized)
+#             k_dist_temp.append(temp_dist)
+#         d[tc] = np.mean(k_dist_temp)
+#         p[tc] = 1-weibull_models[tc].w_score_vector(np.array([d[tc]], dtype="double"))
+#     final_p = {} 
+#     for i, v in enumerate(p.values()):
+#         if v[0] > threshold:
+#             final_p[i] = v[0]
+#     if len(final_p) == 0:
+#         eucos_pred.append(120)
+#     else:
+#         eucos_pred.append(int(max(final_p, key=final_p.get)))
+#     sri+=1
+# print ("Done.")
 
 #y_pred = eucos_pred
 #metric_type = "EUCOS"
@@ -378,9 +298,9 @@ print ("Done.")
 #print( M)
 
 
-#exit()
+
 # kNN averaged
-# MAHALANOBIS
+# MAHALANOBIS model 
 metric_type = "md"
 normalized = True
 threshold = 0.8
@@ -420,114 +340,105 @@ for av in tqdm(all_av):
         md_pred.append(labels.index(str(max(p, key=p.get))))
 print ("Done.")
 
-print(md_pred[:20])
 
-print("--------------------------------------------------------\n")
-print("actual",y_act[-20:])
-print("lof",lof_pred[-20:])
-print("loop",loop_pred[-20:])
-print("md",md_pred[-20:])
-
-print("--------------------------------------------------------\n")
+# print("--------------------------------------------------------\n")
+# print("actual",y_act[-20:])
+# print("lof",lof_pred[-20:])
+# print("loop",loop_pred[-20:])
+# print("md",md_pred[-20:])
+# print("--------------------------------------------------------\n")
 
 
 
 ensemble_pred = []
 size = len(y_act)
 for i in range(size):
-    loop = loop_pred[i];md = md_pred[i]; eucos = lof_pred[i]                               #eucos = eucos_pred[i]
-    if loop == 120 and md == 120 and eucos == 120:
+    loop = loop_pred[i];md = md_pred[i]; lof = lof_pred[i]                              
+    if loop == 120 and md == 120 and lof == 120:
         ensemble_pred.append(120)
-    elif loop == md and loop != eucos:
-        ensemble_pred.append(loop)     #changed on 10/29 from loop
-    elif md == eucos and md != loop:
-        ensemble_pred.append(md)#
-    elif eucos == loop and eucos != md:
-        ensemble_pred.append(md)# changed on 10/11 from eucos
-    elif eucos != md and md != loop and eucos != loop:
-        ensemble_pred.append(md)#changed from eucos
+    elif loop == md and loop != lof:
+        ensemble_pred.append(loop)    
+    elif md == lof and md != loop:
+        ensemble_pred.append(md)
+    elif lof == loop and lof != md:
+        ensemble_pred.append(lof)
+    elif lof != md and md != loop and lof != loop:
+        ensemble_pred.append(md) # md given highest priority tie breaker
     elif eucos == md and md == loop:
-        ensemble_pred.append(md)# changed on oct 25 from md
+        ensemble_pred.append(md)
     else:
-        print (i)
+        print(i)
         
         
         
-        
+#ensemble model prediction        
 y_pred = ensemble_pred
-print( labels)
-print (dataset)
+print(labels)
+print(dataset)
 metric_type = "ENSEMBLE"
 correct_predictions = sum(np.array(y_pred) == np.array(y_act))
-print ("Model: "+folder_name+"  metric: "+metric_type)
-print ("Correct: "+str(correct_predictions))
+print("Model: "+folder_name+"  metric: "+metric_type)
+prin ("Correct: "+str(correct_predictions))
 print("Total number of test examples: {}".format(len(y_act)))
 print ("Accuracy: "+str(metrics.accuracy_score(y_act, y_pred)))
 k = metrics.precision_recall_fscore_support(y_act, y_pred, average='macro')
 print("F1-Score: {:g}".format(k[2]))
-#print( k)
+print(k)
 M = metrics.confusion_matrix(y_act, y_pred)
 print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
-#print( M)
+print(M)
 
 
-#exit()
-
+# invidividual model prediction "Isolation Forest"
 y_pred = loop_pred
-#y_pred = lof_pred
 metric_type = "Isolation Forest"
 normalized = False
 correct_predictions = float(sum(np.array(y_pred) == np.array(y_act)))
 print( "Model: "+folder_name+"  metric: "+metric_type+"  normalized: "+str(normalized))
 print( "Correct: "+str(correct_predictions))
-#print("Total number of test examples: {}".format(len(y_act)))
+print("Total number of test examples: {}".format(len(y_act)))
 print ("Accuracy: "+str(metrics.accuracy_score(y_act, y_pred)))
 k = metrics.precision_recall_fscore_support(y_act, y_pred, average='macro')
 print("F1-Score: {:g}".format(k[2]))
-#print(k)      
+print(k)      
 M = metrics.confusion_matrix(y_act, y_pred)
-#print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
-#print (M)
+print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
+print (M)
 
-
-#exit()
+# invidividual model prediction Mahalanobis model
 y_pred = md_pred
 metric_type = "MD"
 normalized = True
 correct_predictions = float(sum(np.array(y_pred) == np.array(y_act)))
 print ("Model: "+folder_name+"  metric: "+metric_type+"  normalized: "+str(normalized))
 print ("Correct: "+str(correct_predictions))
-#print("Total number of test examples: {}".format(len(y_act)))
+print("Total number of test examples: {}".format(len(y_act)))
 print ("Accuracy: "+str(metrics.accuracy_score(y_act, y_pred)))
 k = metrics.precision_recall_fscore_support(y_act, y_pred, average='macro')
 print("F1-Score: {:g}".format(k[2]))
-#print (k)
+print (k)
 M = metrics.confusion_matrix(y_act, y_pred)
-#print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
-#print( M)
+print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
+print( M)
 
-#exit()
-#y_pred = eucos_pred
+# invidividual model prediction LOF model
 y_pred = lof_pred
-#metric_type = "EUCOS"
 metric_tyep = "LOF"
 normalized = False
 correct_predictions = float(sum(np.array(y_pred) == np.array(y_act)))
-#print ("Model: "+folder_name+"  metric: "+metric_type+"  normalized: "+str(normalized))
-#print ("Correct: "+str(correct_predictions))
-#print("Total number of test examples: {}".format(len(y_act)))
+print ("Model: "+folder_name+"  metric: "+metric_type+"  normalized: "+str(normalized))
+print ("Correct: "+str(correct_predictions))
+print("Total number of test examples: {}".format(len(y_act)))
 print( "Accuracy: "+str(metrics.accuracy_score(y_act, y_pred)))
 k = metrics.precision_recall_fscore_support(y_act, y_pred, average='macro')
 print("F1-Score: {:g}".format(k[2]))
-#print (k)
+print (k)
 M = metrics.confusion_matrix(y_act, y_pred)
-#print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
-#print (M)
+print(metrics.classification_report(y_act, y_pred, target_names=trained_classes+['Unknown']))
+print (M)
 
 
 
-exit()        
-        
         
         
         
