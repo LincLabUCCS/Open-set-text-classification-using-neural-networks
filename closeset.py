@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# this file is used when trained on x classes and tested on same x classes
+# this file is used when trained on n classes and tested on same n classes which is closed set scenario
 import tensorflow as tf
 import numpy as np
 import os
@@ -21,7 +21,7 @@ def softmax(x):
     return exp_x / np.sum(exp_x, axis=1).reshape((-1, 1))
 
 dataset = "amazon"
-
+#trained on 20 classes and tested on 20 classes
 training_classes = ['Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera', 'CDPlayer', 'Clothing', 'Computer', 'Conditioner', 'Fan', 'Flashlight', 'Graphics Card', 'Headphone', 'Home Improvement', 'Jewelry', 'Kindle', 'Kitchen', 'Lamp', 'Luggage']
 
 #dataset = "20newsgroup"
