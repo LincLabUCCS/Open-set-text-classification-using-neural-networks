@@ -36,10 +36,6 @@ twenty_classes = ['alt.atheism',
  'talk.politics.mideast',
  'talk.politics.misc', 'talk.religion.misc']
 
-#training_classes = ['alt.atheism', 'comp.graphics', 'misc.forsale', 'rec.autos', 'rec.sport.baseball', 'sci.crypt', 'sci.electronics', 'sci.med', 'talk.politics.guns', 'talk.politics.misc']
-
-#training_classes = ['rec.motorcycles', 'comp.graphics', 'comp.os.ms-windows.misc', 'alt.atheism','comp.sys.mac.hardware','comp.windows.x','misc.forsale','comp.sys.ibm.pc.hardware','rec.autos','rec.sport.baseball']
-
 training_classes = ['comp.graphics', 'alt.atheism', 'comp.sys.mac.hardware', 'misc.forsale', 'rec.autos']
 
 
@@ -59,14 +55,14 @@ vocab_processor = learn.preprocessing.VocabularyProcessor(max_document_length)
 x_train = np.array(list(vocab_processor.fit_transform(x_text)))
 
 
-# TODO Randomly shuffle data
+# Randomly shuffle data
 # np.random.seed(10)
 # shuffle_indices = np.random.permutation(np.arange(len(y)))
 # x_shuffled = x[shuffle_indices]
 # y_shuffled = y[shuffle_indices]
 
-print x_train.shape
-print y_train.shape
+print(x_train.shape)
+print(y_train.shape)
 
 # __TRAINING__
 
@@ -84,8 +80,8 @@ with tf.Graph().as_default():
             vocab_size=len(vocabulary),
             embedding_size=embedding_dimension,
             filter_sizes=[3, 4, 5],
-            num_filters=100, # using 100 filters each
-            l2_reg_lambda=0.0) # TODO l2 regularization
+            num_filters=100, # using 100 filters each total 300 filters
+            l2_reg_lambda=0.0) #  l2 regularization
 
 
     # training procedure
@@ -167,4 +163,4 @@ with tf.Graph().as_default():
         if current_step % 100 == 0:
             path = saver.save(sess, checkpoint_prefix, global_step=current_step)
             print("Saved model checkpoint to {}\n".format(path))
-    print "Done."
+    print("Done.")
