@@ -2,7 +2,7 @@
 """
 Created on Wed Jun 13 12:49:12 2018
 
-@author: Vinu
+@author: Vinodini
 """
 
 import tensorflow as tf
@@ -18,7 +18,8 @@ import sys
 from helper import *
 
 dataset = "20ng"
-folder_name = "1528852501"
+#This folder contains weights of the trained model 
+folder_name = "1528852501"   
 trained_classes =['comp.graphics', 'alt.atheism', 'comp.sys.mac.hardware', 'misc.forsale', 'rec.autos']
 
 dirs = generate_folders(folder_name)
@@ -42,7 +43,7 @@ for tc in trained_classes:
         labels = datasets1['target_names']
         x_net, _ = data_helpers.load_data_labels_amazon(datasets1)
     else:
-        print ("Invalid dataset!");break;
+        print("Invalid dataset!");break;
 
     path = "./runs/"+folder_name+"/vocab"
     vocab_processor = learn.preprocessing.VocabularyProcessor.restore(path)
@@ -83,7 +84,7 @@ for tc in trained_classes:
     all_av = np.array(all_av)
     np.save(dirs['avs_dir']+"/"+tc+".npy", all_av)
     np.save(dirs['mavs_dir']+"/"+tc+".npy", (np.mean(all_av, axis=0)))
-    print ("Finished calculating AVs for: "+tc+" Shape: "+str(all_av.shape))
+    print("Finished calculating AVs for: "+tc+" Shape: "+str(all_av.shape))
 print( "All Done.")
 
 
@@ -130,7 +131,7 @@ for c in trained_classes:
     pickle.dump(mr.as_binary(), open(dirs['k_dist_wb_dir']+"/"+c+".npy", "wb"))
 #     pickle.dump(mr.as_binary(), open(dirs['wb_dir']+"/"+c+".npy", "wb"))
 plt.show()
-print ("Done generating Weibull Model, tailsize: "+str(tail_size))
+print("Done generating Weibull Model, tailsize: "+str(tail_size))
 
 
 # K-CLOSEST:
@@ -161,7 +162,7 @@ for c in trained_classes:
     print( distances_AV_kClosest.shape)
 #     np.save(dirs['k_dist_dir']+"/"+c+".npy", distances_AV_kClosest) # EUC
     np.save(dirs['k_closest_dir2']+"/"+c+".npy", distances_AV_kClosest) # MD
-print ("Done.")
+print("Done.")
 
 # K - CLOSEST:
 tail_size = 30
@@ -174,7 +175,7 @@ for c in trained_classes:
 #     pickle.dump(mr.as_binary(), open(dirs['k_dist_wb_dir']+"/"+c+".npy", "wb"))
     pickle.dump(mr.as_binary(), open(dirs['wb_dir']+"/"+c+".npy", "wb"))
 plt.show()
-print ("Done generating Weibull Model, tailsize: "+str(tail_size))
+print("Done generating Mahalanobis Model, tailsize: "+str(tail_size))
 
 
 
