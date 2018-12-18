@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-
+# this file is used when trained on x classes and tested on same x classes
 import tensorflow as tf
 import numpy as np
 import os
@@ -22,47 +22,10 @@ def softmax(x):
 
 dataset = "amazon"
 
-
-
-#training_classes = ['Lamp', 'Luggage', 'Magazine Subscriptions', 'Mattress', 'Memory Card', 'Microphone', 'Microwave', 'Monitor', 'Mouse', 'Movies TV' ]
-#training_classes=['Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera', 'CDPlayer', 'Clothing', 'Computer', 'Conditioner']
-#training_classes =['Fan', 'Flashlight', 'Graphics Card', 'Headphone', 'Home Improvement', 'Jewelry', 'Kindle', 'Kitchen', 'Watch', 'Webcam']
-#training_classes =[ 'Patio Lawn Garden', 'Pet Supplies', 'Pillow', 'Printer', 'Projector', 'Rice Cooker', 'Shoes', 'Speaker', 'Subwoofer', 'Table Chair']
-
 training_classes = ['Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera', 'CDPlayer', 'Clothing', 'Computer', 'Conditioner', 'Fan', 'Flashlight', 'Graphics Card', 'Headphone', 'Home Improvement', 'Jewelry', 'Kindle', 'Kitchen', 'Lamp', 'Luggage']
-#training_classes =['Office Products', 'Patio Lawn Garden', 'Pet Supplies', 'Pillow', 'Printer', 'Projector', 'Rice Cooker', 'Shoes', 'Speaker', 'Subwoofer', 'Table Chair', 'Tablet', 'Telephone', 'Tent', 'Toys', 'Video Games', 'Vitamin Supplement', 'Wall Clock', 'Watch', 'Webcam']
-
-#training_classes = [ 'Magazine Subscriptions', 'Mattress', 'Memory Card', 'Microphone', 'Microwave', 'Monitor', 'Mouse', 'Movies TV', 'Musical Instruments', 'Network Adapter','Pillow', 'Printer', 'Projector', 'Rice Cooker', 'Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera']
-
-
-#training_classes = ['Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera', 'CDPlayer', 'Clothing', 'Computer', 'Conditioner', 'Fan', 'Flashlight', 'Graphics Card', 'Headphone', 'Home Improvement', 'Jewelry', 'Kindle', 'Kitchen', 'Lamp', 'Luggage', 'Magazine Subscriptions', 'Mattress', 'Memory Card', 'Microphone', 'Microwave', 'Monitor', 'Mouse', 'Movies TV', 'Musical Instruments', 'Network Adapter', 'Office Products', 'Patio Lawn Garden', 'Pet Supplies', 'Pillow', 'Printer', 'Projector', 'Rice Cooker', 'Shoes', 'Speaker', 'Subwoofer', 'Table Chair', 'Tablet', 'Telephone', 'Tent', 'Toys', 'Video Games', 'Vitamin Supplement', 'Wall Clock', 'Watch', 'Webcam']
-
-
-
-
-#training_classes = ['Watch', 'Graphics Card', 'Shoes','Automotive','Luggage']
-#training_classes = ['Graphics Card', 'Shoes']
-#training_classes=['Amplifier', 'Automotive', 'Battery', 'Beauty', 'Cable', 'Camera', 'CDPlayer', 'Clothing', 'Computer', 'Conditioner']
-
-
 
 #dataset = "20newsgroup"
-#training_classes = ['alt.atheism', 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware',
-# 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles', 'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt',
-# 'sci.electronics', 'sci.med', 'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast',
-# 'talk.politics.misc', 'talk.religion.misc']
 
-
-
-#training_classes = ['alt.atheism', 'comp.graphics', 'comp.os.ms-windows.misc', 'comp.sys.ibm.pc.hardware', 'comp.sys.mac.hardware', 'comp.windows.x', 'misc.forsale', 'rec.autos', 'rec.motorcycles',
- #'rec.sport.baseball', 'rec.sport.hockey', 'sci.crypt', 'sci.electronics', 'sci.med', 'sci.space', 'soc.religion.christian', 'talk.politics.guns', 'talk.politics.mideast',
-#training_classes = ['sci.electronics', 'sci.med', 'sci.space','comp.graphics', 'talk.religion.misc','comp.windows.x', 'rec.autos']
-
-#training_classes = ['comp.graphics', 'alt.atheism',  'sci.electronics', 'soc.religion.christian','rec.sport.hockey','talk.religion.misc','comp.sys.mac.hardware', 'misc.forsale', 'rec.autos', 'talk.politics.mideast']
-#training_classes = ['comp.graphics', 'sci.space','comp.windows.x'  ,'sci.electronics','sci.med','rec.sport.hockey','talk.religion.misc','comp.sys.ibm.pc.hardware', 'rec.autos', 'talk.politics.guns']
-#training_classes = [ 'comp.sys.ibm.pc.hardware', 'alt.atheism','talk.politics.guns','sci.med','misc.forsale','sci.crypt','rec.sport.baseball']
-#training_classes = ['rec.sport.baseball', 'sci.crypt', 'comp.sys.ibm.pc.hardware', 'sci.med', 'talk.politics.guns' ]
-#['comp.graphics', 'alt.atheism', 'comp.sys.mac.hardware', 'misc.forsale', 'rec.autos']
 if dataset == "20newsgroup":
     datasets = data_helpers.get_datasets_20newsgroup(subset="test", categories=training_classes, remove=('headers', 'footers', 'quotes'))
     x_raw, y_test = data_helpers.load_data_labels(datasets)
@@ -78,7 +41,7 @@ print("Total number of test examples: {}".format(len(y_test)))
 print(datasets['target_names'])
 
 path = "./runs/"+folder_name+"/vocab"
-print "path: "+path
+print("path: "+path)
 vocab_processor = learn.preprocessing.VocabularyProcessor.restore(path)
 x_test = np.array(list(vocab_processor.transform(x_raw)))
 
@@ -126,7 +89,7 @@ with graph.as_default():
 # Print accuracy if y_test is defined
 if y_test is not None:
     correct_predictions = float(sum(all_predictions == y_test))
-    print "Correct: "+str(correct_predictions)
+    print("Correct: "+str(correct_predictions))
     print("Total number of test examples: {}".format(len(y_test)))
     print("Accuracy: {:g}".format(correct_predictions/float(len(y_test))))
     print(metrics.classification_report(y_test, all_predictions, target_names=datasets['target_names']))
@@ -141,4 +104,4 @@ out_path = os.path.join("./runs/"+folder_name+"/checkpoints/", "..", "prediction
 print("Saving evaluation to {0}".format(out_path))
 with open(out_path, 'w') as f:
     csv.writer(f).writerows(predictions_human_readable)
-print "Done."
+print("Done.")
